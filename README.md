@@ -2,7 +2,7 @@
 
 ## How to build & deploy
 
-```
+```console
 GOOS=linux GOARCH=amd64 go build -o mrdebugger cmd/main.go
 docker build . -t umi0410/mrdebugger --platform=linux/amd64
 docker push umi0410/mrdebugger          
