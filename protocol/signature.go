@@ -41,6 +41,22 @@ func downloadPublicKey() bool {
 	return true
 }
 
+func CheckSignatureJinsu(signatureStr string, body []byte) bool {
+	if publicKey == nil && !downloadPublicKey() {
+		return false
+	}
+
+	hash := crypto.SHA256.New()
+	hash.Write(body)
+	hashData := hash.Sum(nil)
+	signature, _ := base64.StdEncoding.DecodeString(signatureStr)
+	err := rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashData, signature)
+	if err != nil {
+		return false
+	}
+	return true
+}
+
 func CheckSignature(r *http.Request, body []byte) bool {
 	signatureStr := r.Header.Get("SignatureCEK")
 

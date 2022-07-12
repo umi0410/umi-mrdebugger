@@ -1,3 +1,18 @@
+# umi-mrdebugger
+
+## How to build & deploy
+
+```
+GOOS=linux GOARCH=amd64 go build -o mrdebugger cmd/main.go
+docker build . -t umi0410/mrdebugger --platform=linux/amd64
+docker push umi0410/mrdebugger          
+```
+
+M1이라 크로스 컴파일, 크로스 플랫폼 빌드.
+
+<details>
+  <summary>original upstream: 코인헬퍼</summary>
+  
 ### 개요 
 '코인헬퍼'라는 Clova extension의 REST API 서버 소스 코드입니다. '코인헬퍼' 익스텐션이 어떻게 작동하는지 보시려면, Clova 앱이나 Clova 스피커(WAVE, Friens)에서 '코인헬퍼 시작해줘'라고 말해보시길 바랍니다. 해당 익스텐션을 실행하면 코인헬퍼가 비트코인을 비롯한 가상화폐의 시세를 알려줍니다. 
 
@@ -79,4 +94,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+
+</details>
+
 
