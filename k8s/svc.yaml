@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: mrdebugger
+  labels:
+    app: mrdebugger
+  name: mrdebugger
+spec:
+  selector:
+    app: mrdebugger
+  ports:
+  - name: mrdebugger
+    port: 80
+    protocol: TCP
+    targetPort: http
+  type: ClusterIP

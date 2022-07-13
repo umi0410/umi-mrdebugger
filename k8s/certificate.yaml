@@ -1,0 +1,15 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mrdebugger-cert
+  namespace: istio-system
+spec:
+  secretName: mrdebugger-cert-secret
+  commonName: mrdebugger.clova.jinsu.me
+  issuerRef:
+    # 다른 네임스페이스여도 상관 없나 ClusterIssuer면?
+    name: clova-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+  dnsNames:
+  - "mrdebugger.clova.jinsu.me"

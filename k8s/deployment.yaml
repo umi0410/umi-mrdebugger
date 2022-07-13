@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mrdebugger
+  labels:
+    app: mrdebugger
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: mrdebugger
+  template:
+    metadata:
+      labels:
+        app: mrdebugger
+    spec:
+      terminationGracePeriodSeconds: 1
+      containers:
+      - name: mrdebugger
+        image: umi0410/mrdebugger
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            port: 8080
+            path: /health
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+          periodSeconds: 10
