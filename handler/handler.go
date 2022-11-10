@@ -2,13 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gofiber/fiber/v2"
+	log "github.com/sirupsen/logrus"
 	"github.com/umi0410/umi-mrdebugger/protocol"
+	"github.com/umi0410/umi-mrdebugger/raspberrypi"
 )
 
 const (
@@ -35,6 +36,8 @@ var (
 		"다른 클러스터에 작업 중이신 건 아닌가요? 사실이라면 쪼금 무섭네요.",
 		"머리가 너무 답답할 때는 그냥 잠시 쉬고 오세요!",
 	}
+
+	RPI *raspberrypi.RaspberryPi
 )
 
 func getRandomDebuggingTips() string {
@@ -99,6 +102,7 @@ func handleEndRequest() protocol.CEKResponsePayload {
 
 func handleIntent(intentName string) protocol.CEKResponse {
 	switch intentName {
+	// 새로운 디버깅 팁을 요청한 경우
 	case "AnotherTipRequested":
 		return protocol.CEKResponse{
 			Response: protocol.CEKResponsePayload{
@@ -107,6 +111,66 @@ func handleIntent(intentName string) protocol.CEKResponse {
 			},
 			SessionAttributes: nil,
 		}
+	// NOTE: RaspberryPi 관련 코드는 개인 라즈베리파이에 대한 제어를 위한 것이다.
+	// Raspberry Pi Pico W에게 on 명령어를 전달한다.
+	case "TurnOnRaspberryPi":
+		result := "켰어요."
+		statusCode, err := RPI.TurnOn()
+		if err != nil {
+			log.Errorf("%+v", err)
+			result = err.Error()
+		} else if statusCode != http.StatusOK {
+			log.Errorf("Status code is %d, not %d", statusCode, http.StatusOK)
+			result = fmt.Sprintf("상태 코드가 200이 아닌 %d입니다.", statusCode)
+		}
+
+		return protocol.CEKResponse{
+			Response: protocol.CEKResponsePayload{
+				OutputSpeech:     protocol.MakeOutputSpeech(result),
+				ShouldEndSession: false,
+			},
+			SessionAttributes: nil,
+		}
+	// Raspberry Pi Pico W에게 off 명령어를 전달한다.
+	case "TurnOffRaspberryPi":
+		result := "껐어요."
+		statusCode, err := RPI.TurnOff()
+		if err != nil {
+			log.Errorf("%+v", err)
+			result = err.Error()
+		} else if statusCode != http.StatusOK {
+			log.Errorf("Status code is %d, not %d", statusCode, http.StatusOK)
+			result = fmt.Sprintf("상태 코드가 200이 아닌 %d입니다.", statusCode)
+		}
+
+		return protocol.CEKResponse{
+			Response: protocol.CEKResponsePayload{
+				OutputSpeech:     protocol.MakeOutputSpeech(result),
+				ShouldEndSession: false,
+			},
+			SessionAttributes: nil,
+		}
+	// Raspberry Pi Pico W의 온도를 조회해 알려준다.
+	case "RaspberryPiTemperature":
+		result, statusCode, err := RPI.GetTemperature()
+		if err != nil {
+			log.Errorf("%+v", err)
+			result = err.Error()
+		} else if statusCode != http.StatusOK {
+			log.Errorf("Status code is %d, not %d", statusCode, http.StatusOK)
+			result = fmt.Sprintf("상태 코드가 200이 아닌 %d입니다.", statusCode)
+		} else {
+			result = fmt.Sprintf("현재 라즈베리파이의 온도는 %s도입니다.", result)
+		}
+
+		return protocol.CEKResponse{
+			Response: protocol.CEKResponsePayload{
+				OutputSpeech:     protocol.MakeOutputSpeech(result),
+				ShouldEndSession: false,
+			},
+			SessionAttributes: nil,
+		}
+
 	case "QuitRequested":
 		{
 			return protocol.CEKResponse{

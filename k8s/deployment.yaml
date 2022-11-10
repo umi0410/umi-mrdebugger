@@ -32,3 +32,8 @@ spec:
           successThreshold: 1
           failureThreshold: 3
           periodSeconds: 10
+        # NOTE: 시크릿은 로컬에서 그냥 수동으로 생성해줬다.
+        envFrom:
+        - secretRef:
+            name: mrdebugger
+            optional: true

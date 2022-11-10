@@ -8,12 +8,15 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	log "github.com/sirupsen/logrus"
 	"github.com/umi0410/umi-mrdebugger/handler"
+	"github.com/umi0410/umi-mrdebugger/raspberrypi"
 )
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
 }
+
 func main() {
+	handler.RPI = raspberrypi.NewRaspberryPi()
 	app := fiber.New()
 	app.Use(logger.New())
 	app.Post("/", handler.HelpDebugging)
